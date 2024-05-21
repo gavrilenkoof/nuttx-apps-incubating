@@ -2,6 +2,6 @@
 
 int main(int argc, char *argv[])
 {
-  printf("Hello, Custom World!!!!\n");
+  printf("Hello, Custom World!!\n");
   return 0;
 }
