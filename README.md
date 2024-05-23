@@ -1,4 +1,78 @@
 # Application Folder
+## Getting Started 
+1. Install the following set for Linux
+```
+sudo apt update
+sudo apt upgrade
+sudo apt install \
+bison flex gettext texinfo libncurses5-dev libncursesw5-dev xxd \
+gperf automake libtool pkg-config build-essential gperf genromfs \
+libgmp-dev libmpc-dev libmpfr-dev libisl-dev binutils-dev libelf-dev \
+libexpat-dev gcc-multilib g++-multilib picocom u-boot-tools util-linux
+```
+2. Create a directory to group all NuttX repositories and access it:
+```
+mkdir ~/nuttxspace && cd ~/nuttxspace
+```
+3. Сlone both repositories
+```
+git clone https://github.com/gavrilenkoof/nuttx.git nuttx
+git clone https://github.com/gavrilenkoof/nuttx-apps.git apps
+```
+4. Install KConfig frontend
+```
+sudo apt install kconfig-frontends
+```
+5. Download and decompress the pre built cross compiler for ESP32 in Linux environment. The cross compiler will be used to convert the source code into an executable code.
+```
+mkdir xtensa-esp32-elf
+curl -s -L "https://github.com/espressif/crosstool-NG/releases/download/esp-12.2.0_20230208/xtensa-esp32-elf-12.2.0_20230208-x86_64-linux-gnu.tar.xz" | tar -C xtensa-esp32-elf --strip-components 1 -xJ
+```
+6. Since the /opt/ directory is a space commonly used to store third party software, create a directory at /opt/ to keep the cross compiler for xtensa architecture:
+```
+sudo mkdir /opt/xtensa 
+```
+7. Move the cross compiler to this new directory and 
+```
+sudo mv xtensa-esp32-elf/ /opt/xtensa/
+```
+8. Now you have the cross compiler for ESP32 at this path, in order to invoke the cross compiler binaries as commands, you should add its absolute path to PATH, which is a Linux environment variable that informs the shell where to search for executables or programs that are invoked through commands. To do so, use the following command:
+```
+export PATH=$PATH:/opt/xtensa/xtensa-esp32-elf/bin
+```
+9. Install the esptool Python module to perform the download of all binaries to the ESP32 through serial.
+```
+pip3 install esptool
+```
+10. Open nano and add these lines at the end ( Replace <user> with your user name ) 
+```
+sudo nano ~/.bashrc
+
+# Add esptool.py and its dependencies directory 
+PATH=$PATH:/home/<user>/.local/bin
+# Add the cross compiler path for ESP32
+PATH=$PATH:/opt/xtensa/xtensa-esp32-elf/bin
+```
+11. ESP32 also requires a bootloader and a partition table.
+```
+mkdir esp-bins
+curl -L "https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/bootloader-esp32.bin" -o esp-bins/bootloader-esp32.bin
+curl -L "https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/partition-table-esp32.bin" -o esp-bins/partition-table-esp32.bin
+```
+12. In the NuttX directory run the configuration script to create a configuration file for ESP32.
+```
+cd nuttx
+./tools/configure.sh esp32-devkitc:nsh
+```
+13. Finally, from now on, connect your DevKit to your computer, build and download all the binaries:
+```
+make download ESPTOOL_PORT=/dev/ttyUSB0 ESPTOOL_BAUD=115200 ESPTOOL_BINDIR=../esp-bins
+```
+
+For more information go to these links: 
+1. https://nuttx.apache.org/docs/latest/quickstart/install.html
+2. https://nuttx.apache.org/docs/latest/platforms/xtensa/esp32/index.html
+3. https://blog.espressif.com/getting-started-with-esp32-and-nuttx-fd3e1a3d182c
 
 ## Contents
 
